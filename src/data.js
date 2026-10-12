@@ -1,9 +1,4 @@
-export const CH = [
-  "About you",
-  "Your experience",
-  "Delivery",
-  "Stay connected",
-];
+export const CH = ["About you", "Your experience", "Stay connected"];
 export const DET = [
   "Freshness of produce",
   "Taste",
@@ -128,17 +123,8 @@ export const S = [
     ph: "Share your thoughts, the good and the not-so-good…",
   },
   {
-    k: "area",
-    ch: 2,
-    bonus: 1,
-    t: "Which areas do you usually order to?",
-    sub: "Helps us plan delivery and future pick-up points. Select all the areas you order to.",
-    type: "select",
-    o: [...AREAS, "Other"],
-  },
-  {
     k: "updates",
-    ch: 3,
+    ch: 2,
     last: 1,
     t: "Would you like to receive occasional updates, special offers and birthday surprises from Frootshive?",
     type: "radio",

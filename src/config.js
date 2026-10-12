@@ -16,7 +16,6 @@ export const ENTRY = {
   d3: "entry.1414271877",
   d4: "entry.46954082",
   feedback: "entry.1410294922",
-  area: "entry.1258200206",
   updates: "entry.328789785",
   member: "entry.1046162742",
 };

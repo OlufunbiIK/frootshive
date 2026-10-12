@@ -196,40 +196,6 @@ function Field({ s, ans, setAns, setDetail, clearErr, onAutoAdvance }) {
     );
   }
 
-  if (s.type === "select") {
-    const arr = Array.isArray(v) ? v : [];
-    const toggle = (o) => {
-      setAns(s.k, arr.includes(o) ? arr.filter((x) => x !== o) : [...arr, o]);
-      clearErr();
-    };
-    return (
-      <>
-        <div className="chips" role="group" aria-label={s.t}>
-          {s.o.map((o) => (
-            <button
-              key={o}
-              type="button"
-              role="checkbox"
-              aria-checked={arr.includes(o)}
-              className={"chip" + (arr.includes(o) ? " on" : "")}
-              onClick={() => toggle(o)}
-            >
-              {o}
-            </button>
-          ))}
-        </div>
-        <input
-          type="text"
-          className="other"
-          style={{ display: arr.includes("Other") ? "block" : "none" }}
-          placeholder="Please tell us your area"
-          value={ans[s.k + "_o"] || ""}
-          onChange={(e) => setAns(s.k + "_o", e.target.value)}
-        />
-      </>
-    );
-  }
-
   if (s.type === "radio" || s.type === "check") {
     const isRadio = s.type === "radio";
     const arr = isRadio ? [] : Array.isArray(v) ? v : [];
