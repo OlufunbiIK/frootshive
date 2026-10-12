@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "./styles.css";
 import SvgDefs from "./SvgDefs.jsx";
 import BirthdayPicker from "./BirthdayPicker.jsx";
+import { SOCIAL_ICONS } from "./SocialIcons.jsx";
 import { LOGO, PH } from "./assets";
 import { FORM_ACTION, ENTRY, SOCIAL, MEMBER_API } from "./config";
 import { CH, DET, L, ROM, pad, S, BACKDROP } from "./data";
@@ -793,6 +794,7 @@ export default function App() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
+                      {SOCIAL_ICONS[label]}
                       {label}
                     </a>
                   ))}

@@ -1246,3 +1246,14 @@ canvas {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+.soc a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.soc a svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
