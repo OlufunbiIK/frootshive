@@ -79,6 +79,7 @@ export const S = [
     ch: 0,
     t: "What is your email address?",
     type: "email",
+    req: 1,
     ph: "you@email.com",
   },
   {
