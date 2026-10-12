@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import "./styles.css";
 import SvgDefs from "./SvgDefs.jsx";
-import BirthdayPicker, { Dropdown } from "./BirthdayPicker.jsx";
+import BirthdayPicker from "./BirthdayPicker.jsx";
 import { LOGO, PH } from "./assets";
 import { FORM_ACTION, ENTRY, SOCIAL, MEMBER_API } from "./config";
-import { CH, DET, RL, L, ROM, pad, S, BACKDROP } from "./data";
+import { CH, DET, L, ROM, pad, S, BACKDROP } from "./data";
 
 const ph = (n) => PH[((n % PH.length) + PH.length) % PH.length];
 
@@ -196,21 +196,31 @@ function Field({ s, ans, setAns, setDetail, clearErr, onAutoAdvance }) {
   }
 
   if (s.type === "select") {
+    const arr = Array.isArray(v) ? v : [];
+    const toggle = (o) => {
+      setAns(s.k, arr.includes(o) ? arr.filter((x) => x !== o) : [...arr, o]);
+      clearErr();
+    };
     return (
       <>
-        <Dropdown
-          placeholder="Choose your area"
-          value={v}
-          options={s.o.map((o) => ({ value: o, label: o }))}
-          onChange={(o) => {
-            setAns(s.k, o);
-            clearErr();
-          }}
-        />
+        <div className="chips" role="group" aria-label={s.t}>
+          {s.o.map((o) => (
+            <button
+              key={o}
+              type="button"
+              role="checkbox"
+              aria-checked={arr.includes(o)}
+              className={"chip" + (arr.includes(o) ? " on" : "")}
+              onClick={() => toggle(o)}
+            >
+              {o}
+            </button>
+          ))}
+        </div>
         <input
           type="text"
           className="other"
-          style={{ display: v === "Other" ? "block" : "none" }}
+          style={{ display: arr.includes("Other") ? "block" : "none" }}
           placeholder="Please tell us your area"
           value={ans[s.k + "_o"] || ""}
           onChange={(e) => setAns(s.k + "_o", e.target.value)}
@@ -270,25 +280,6 @@ function Field({ s, ans, setAns, setDetail, clearErr, onAutoAdvance }) {
     );
   }
 
-  if (s.type === "rate") {
-    return (
-      <>
-        <Rate
-          value={v || 0}
-          onChange={(x) => {
-            setAns("rating", x);
-            clearErr();
-          }}
-        />
-        <div className="scale">
-          <span>1 = Very poor</span>
-          <span>5 = Excellent</span>
-        </div>
-        <div className="rl">{RL[v || 0]}</div>
-      </>
-    );
-  }
-
   if (s.type === "multirate") {
     return (
       <>
@@ -313,29 +304,6 @@ function Field({ s, ans, setAns, setDetail, clearErr, onAutoAdvance }) {
             />
           </div>
         ))}
-      </>
-    );
-  }
-
-  if (s.type === "nps") {
-    return (
-      <>
-        <div className="nps">
-          {Array.from({ length: 11 }, (_, x) => (
-            <button
-              key={x}
-              type="button"
-              className={v === x ? "on" : ""}
-              onClick={() => setAns("nps", x)}
-            >
-              {x}
-            </button>
-          ))}
-        </div>
-        <div className="scale" style={{ maxWidth: "100%" }}>
-          <span>Not at all likely</span>
-          <span>Extremely likely</span>
-        </div>
       </>
     );
   }

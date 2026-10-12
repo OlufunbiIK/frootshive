@@ -18,11 +18,12 @@ export const ENTRY = {
   feedback: "entry.1410294922",
   area: "entry.1258200206",
   updates: "entry.328789785",
-  member: "", // paste the entry number of the new "Member number" question here (Part 3)
+  member: "entry.1046162742",
 };
 
 /* Member-number counter: your Apps Script web app URL ending in /exec (Part 3) */
-export const MEMBER_API = "";
+export const MEMBER_API =
+  "https://script.google.com/macros/s/AKfycbyMiAy9PIKb26GtOlOOM9cdi93IGPiHogZVni1uYLGLSakbqColuX-UZY2LpiTwgvchzg/exec";
 
 /* Add your links to show buttons on the thank-you page (leave "" to hide) */
 export const SOCIAL = {

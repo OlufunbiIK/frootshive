@@ -9,16 +9,8 @@ export const DET = [
   "Taste",
   "Packaging & presentation",
   "Delivery & timing",
-  "Value for money",
 ];
-export const RL = [
-  "",
-  "Not what we hoped",
-  "Could be better",
-  "It was good",
-  "Really enjoyed it",
-  "Absolutely perfect",
-];
+
 export const L = "ABCDEFGHIJKLMNOP";
 export const ROM = ["I", "II", "III", "IV"];
 export const pad = (n) => String(n).padStart(2, "0");
@@ -116,6 +108,7 @@ export const S = [
       "Someone gifted me a Frootshive order",
       "Event",
       "Google / Search",
+      "Snapchat",
       "Other",
     ],
   },
@@ -138,8 +131,8 @@ export const S = [
     k: "area",
     ch: 2,
     bonus: 1,
-    t: "Which area do you usually order to?",
-    sub: "Helps us plan delivery and future pick-up points.",
+    t: "Which areas do you usually order to?",
+    sub: "Helps us plan delivery and future pick-up points. Select all the areas you order to.",
     type: "select",
     o: [...AREAS, "Other"],
   },
