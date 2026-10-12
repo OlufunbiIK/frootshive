@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import "./styles.css";
 import SvgDefs from "./SvgDefs.jsx";
-import BirthdayPicker from "./BirthdayPicker.jsx";
+import BirthdayPicker, { Dropdown } from "./BirthdayPicker.jsx";
 import { LOGO, PH } from "./assets";
-import { FORM_ACTION, ENTRY, SOCIAL } from "./config";
+import { FORM_ACTION, ENTRY, SOCIAL, MEMBER_API } from "./config";
 import { CH, DET, RL, L, ROM, pad, S, BACKDROP } from "./data";
 
 const ph = (n) => PH[((n % PH.length) + PH.length) % PH.length];
@@ -195,6 +195,30 @@ function Field({ s, ans, setAns, setDetail, clearErr, onAutoAdvance }) {
     );
   }
 
+  if (s.type === "select") {
+    return (
+      <>
+        <Dropdown
+          placeholder="Choose your area"
+          value={v}
+          options={s.o.map((o) => ({ value: o, label: o }))}
+          onChange={(o) => {
+            setAns(s.k, o);
+            clearErr();
+          }}
+        />
+        <input
+          type="text"
+          className="other"
+          style={{ display: v === "Other" ? "block" : "none" }}
+          placeholder="Please tell us your area"
+          value={ans[s.k + "_o"] || ""}
+          onChange={(e) => setAns(s.k + "_o", e.target.value)}
+        />
+      </>
+    );
+  }
+
   if (s.type === "radio" || s.type === "check") {
     const isRadio = s.type === "radio";
     const arr = isRadio ? [] : Array.isArray(v) ? v : [];
@@ -266,16 +290,31 @@ function Field({ s, ans, setAns, setDetail, clearErr, onAutoAdvance }) {
   }
 
   if (s.type === "multirate") {
-    return DET.map((d, j) => (
-      <div className="mrow" key={d}>
-        <span>{d}</span>
-        <Rate
-          className="rate sm"
-          value={ans.details[j] || 0}
-          onChange={(x) => setDetail(j, x)}
-        />
-      </div>
-    ));
+    return (
+      <>
+        <div className="mrow overall">
+          <span>Overall experience</span>
+          <Rate
+            className="rate sm"
+            value={ans.rating || 0}
+            onChange={(x) => {
+              setAns("rating", x);
+              clearErr();
+            }}
+          />
+        </div>
+        {DET.map((d, j) => (
+          <div className="mrow" key={d}>
+            <span>{d}</span>
+            <Rate
+              className="rate sm"
+              value={ans.details[j] || 0}
+              onChange={(x) => setDetail(j, x)}
+            />
+          </div>
+        ))}
+      </>
+    );
   }
 
   if (s.type === "nps") {
@@ -409,6 +448,8 @@ export default function App() {
 
   const valid = () => {
     const q = S[iRef.current];
+    if (q.type === "multirate" && q.req && !ansRef.current.rating)
+      return "Please give your overall rating to continue.";
     const v = ansRef.current[q.k];
     if (
       q.req &&
@@ -419,8 +460,6 @@ export default function App() {
       return "Please answer this one to continue.";
     if (q.k === "email" && v && !/^\S+@\S+\.\S+$/.test(v.trim()))
       return "That email address doesn't look quite right.";
-    if (q.k === "phone" && v.replace(/\D/g, "").length < 7)
-      return "Please check your phone number.";
     return "";
   };
 
@@ -465,9 +504,24 @@ export default function App() {
   async function submit() {
     setSending(true);
     const A = ansRef.current;
+
+    /* get the next member number (FHL-0126, FHL-0127, ...) from the counter */
+    let memberId = "";
+    if (MEMBER_API) {
+      try {
+        const r = await fetch(MEMBER_API);
+        const j = await r.json();
+        memberId = j.id || "";
+      } catch (e) {
+        /* counter unreachable: still save the response */
+      }
+    }
+
     const fd = new FormData();
+    if (memberId && ENTRY.member) fd.append(ENTRY.member, memberId);
     S.forEach((q) => {
       if (q.type === "multirate") {
+        if (A.rating) fd.append(ENTRY.rating, A.rating);
         DET.forEach((_, j) => {
           if (A.details[j]) fd.append(ENTRY["d" + j], A.details[j]);
         });
@@ -477,10 +531,14 @@ export default function App() {
       if (v == null || v === "") return;
       const o = A[q.k + "_o"];
       if (q.type === "date") {
-        const [y, m, d] = v.split("-");
-        fd.append(ENTRY[q.k] + "_year", y);
-        fd.append(ENTRY[q.k] + "_month", +m);
-        fd.append(ENTRY[q.k] + "_day", +d);
+        const [m, d] = v.split("-");
+        fd.append(
+          ENTRY[q.k],
+          new Date(2000, m - 1, d).toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "long",
+          }),
+        );
       } else if (Array.isArray(v)) {
         const otherPicked = v.includes("Other");
         v.forEach((x) => {
@@ -509,7 +567,7 @@ export default function App() {
       /* no-cors: errors are expected and ignored, same as the original */
     }
     const name = A.name.trim();
-    const [, m, d] = A.birthday.split("-");
+    const [m, d] = A.birthday.split("-");
     setMember({
       first: name.split(" ")[0],
       name,
@@ -517,7 +575,7 @@ export default function App() {
         day: "numeric",
         month: "long",
       }),
-      id: "No. " + (Math.floor(Math.random() * 9000) + 1000),
+      id: memberId || "Coming soon",
     });
     setSending(false);
     setStep("end");
@@ -611,7 +669,7 @@ export default function App() {
               </h1>
               <div className="lead">
                 <p>
-                  <b>Hey Frootshive family!</b> Thank you for choosing
+                  <b>Hey Frootshive lovers!</b> Thank you for choosing
                   Frootshive.ng and allowing us to be a little part of your
                   healthy lifestyle.
                 </p>
@@ -751,6 +809,12 @@ export default function App() {
                   </div>
                 </div>
               </div>
+              {Object.values(SOCIAL).some(Boolean) && (
+                <p className="follow">
+                  <b>One last thing:</b> follow us on social media for fresh
+                  updates, special offers and a peek behind the scenes.
+                </p>
+              )}
               <div className="soc">
                 {Object.entries(SOCIAL)
                   .filter(([, href]) => href)
